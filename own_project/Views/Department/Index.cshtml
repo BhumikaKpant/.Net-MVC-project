@@ -1,0 +1,683 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+<link href="~/Content/alertify.css" rel="stylesheet" />
+
+
+<link href="~/Content/alertify.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+
+
+<form >
+    <div class="container-fluid">
+        <h3>Department Detail</h3>
+        <div class="row">
+
+
+
+
+
+
+            <div class="col-md-3">
+
+                <input type="text" id="listid" hidden/>
+                <div class="form-group">
+
+                    <label>Department Name</label>
+                    <select class="form-control width:50ppt" id="departmentid">
+                        <option value="0">choose departmentname</option>
+
+                        @{
+                            if (ViewBag.dlist != null)
+                            {
+                                foreach (var item in ViewBag.dlist)
+                                {
+                                    <option value="@item.departmentid" where> @item.departmentname </option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Doctor name</label>
+                    <select class="form-control width:50ppt" id="doctorid" name="doctorid">
+                        <option value="0"> Choose Doctorname</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+
+                    <label>Doctor specialization</label>
+                    <select class="form-control width:50ppt" id="specializationid">
+                        <option value="0">choose specialization</option>
+
+                    </select>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label> patient name</label>
+                    <select class="form-control width:50ppt" id="patientid" name="patientid">
+                        <option value="0"> Choose Patientname</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>  Image</label>
+                    <input class="file-upload-input" name="postImage" id="imageid" type="file">
+
+                </div>
+            </div>
+
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn btn-success" id="btnsave" onclick="insert();">
+                        Save
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnUpdate"  onclick="Update();">
+                        Update
+                    </button>
+                    <button  class="btn btn-danger" onclick="Reset();" id="Reset">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div style="display: flex; flex-wrap: wrap; margin:5px">
+            <span style="display: flex; align-items: center; margin-right: 20px; margin: 4px; padding: 5px ";>
+                <a style="width: 20px; height: 20px; background-color: purple;"></a>
+                <span style="margin-left: 5px;">Cardiology</span>
+            </span>
+
+            <span style="display: flex; align-items: center; margin-right: 20px; margin: 4px; padding: 5px ";>
+                <a style="width: 20px; height: 20px; background-color: #873030;"></a>
+                <span style="margin-left: 5px;">Oncology</span>
+            </span>
+
+            <span style="display: flex; align-items: center; margin-right: 20px; margin: 4px; padding: 5px ";>
+                <a style="width: 20px; height: 20px; background-color: #4646bf;"></a>
+                <span style="margin-left: 5px;">Neurology</span>
+            </span>
+        </div>
+
+
+
+
+        <div class="TBL">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>S.N</th>
+                        <th>Departmentname</th>
+                        <th>Image</th>
+
+
+                        <th>Doctorname </th>
+                        <th>doctor specialization</th>
+                        <th>Patientname </th>
+
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/alertify.js"></script>
+
+<script src="~/Scripts/alertify.min.js"></script>
+
+<script src="~/Scripts/toastr.min.js"></script>
+
+
+<script>
+    $('document').ready(function () {
+        changes();
+        change();
+        changed();
+        Getlist2();
+        $('#btnUpdate').hide();
+    });
+
+
+
+
+    
+
+    function Getlist2() {
+        
+        $.ajax({
+            url: '/Department/GetList2',
+            method: 'GET',
+            datatype: 'JSON',
+            success: function (data) {
+                var html = '';
+
+                var i = 1;
+
+
+                var bgcolor = ['purple', '#4646bf', '#873030'];
+                var textcolor = ['black', 'white'];
+                $.each(data, function (key, item) {
+
+                    if ($.trim(item.departmentname) == 'cardiology') { 
+                    html += '<tr style="color:' + textcolor[1] + ';background:' + bgcolor[0] + '">';
+                    html += '<td>' + i + '</td>';
+                    html += '<td>' + item.departmentname + '</td>';
+
+                    html += `<td> <img src="${item.image}" height="150" width="150"></td>`;
+                    html += '<td>' + item.doctorname + '</td>';
+                    html += '<td>' + item.dspecialization + '</td>';
+                    html += '<td>' + item.patientname + '</td>';
+                    html += `<td> <button type="button" id="btnedit` + item.id + ` " onclick=GetDetails(` + item.listid + `); class="btn btn-primary" > <i class="fas fa-edit"></i></button >
+                            <button type="button" id="btndelete`+ item.id + `"onclick=ConfirmDelete(` + item.listid + `); class="btn btn-primary" > <i class="fa fa-trash" aria-hidden="true"></i></button > </td >`;
+
+                    html += '</tr>';
+                    }
+
+                    else if ($.trim(item.departmentname) == 'neurology') {
+                        html += '<tr style="color:' + textcolor[1] + ';background:' + bgcolor[1] + '">';
+                        html += '<td>' + i + '</td>';
+                        html += '<td>' + item.departmentname + '</td>';
+
+                        html += `<td> <img src="${item.image}" height="150" width="150"></td>`;
+                        html += '<td>' + item.doctorname + '</td>';
+                        html += '<td>' + item.dspecialization + '</td>';
+                        html += '<td>' + item.patientname + '</td>';
+                        html += `<td> <button type="button" id="btnedit` + item.id + ` " onclick=GetDetails(` + item.listid + `); class="btn btn-primary" > <i class="fas fa-edit"></i></button >
+                            <button type="button" id="btndelete`+ item.id + `"onclick=ConfirmDelete(` + item.listid + `); class="btn btn-primary" > <i class="fa fa-trash" aria-hidden="true"></i></button > </td >`;
+
+                        html += '</tr>';
+                    }
+
+                    else if ($.trim(item.departmentname) == 'oncology') {
+                        html += '<tr style="color:' + textcolor[1] + ';background:' + bgcolor[2] + '">';
+                        html += '<td>' + i + '</td>';
+                        html += '<td>' + item.departmentname + '</td>';
+
+                        html += `<td> <img src="${item.image}" height="150" width="150"></td>`;
+                        html += '<td>' + item.doctorname + '</td>';
+                        html += '<td>' + item.dspecialization + '</td>';
+                        html += '<td>' + item.patientname + '</td>';
+                        html += `<td> <button type="button" id="btnedit` + item.id + ` " onclick=GetDetails(` + item.listid + `); class="btn btn-primary" > <i class="fas fa-edit"></i></button >
+                            <button type="button" id="btndelete`+ item.id + `"onclick=ConfirmDelete(` + item.listid + `); class="btn btn-primary" > <i class="fa fa-trash" aria-hidden="true"></i></button > </td >`;
+
+                        html += '</tr>';
+                    }
+
+                    i++;
+                });
+                $('#tableBody').html(html);
+            },
+            error: function () {
+                alert('list unavailable');
+            }
+        })
+    }
+
+
+
+
+
+
+
+    function insert() {
+        
+        if ($('#departmentid').val() === "") {
+            /* toastr.error("name is required");*/
+            return false;
+        }
+
+        else if ($('#imageid').val() === "") {
+            //   /* toastr.error("image is required");*/
+            //    return false;
+        }
+        else {
+            var formData = new FormData();
+            var image = document.getElementById("imageid").files[0];
+            var imgvalue = $('#imageid').val();
+            /* formData.append('departmentname', $('#departmentid').val());*/
+            formData.append('departmentid', $('#departmentid').val());
+
+
+            formData.append('doctorid', $('#doctorid').val());
+            formData.append('sid', $('#specializationid').val());
+            formData.append('patientid', $('#patientid').val());
+            var files = $("#imageid").get(0).files;
+            if (files.length > 0) {
+                formData.append("imagefile", image);
+                $.ajax({
+                    url: '/Department/Insert',
+                    type: 'POST',
+                    datatype: 'JSON',
+                    async: false,
+                    contentType: false,
+                    processData: false,
+
+                    data: formData,
+                    success: function (data) {
+                        if (data == 1) {
+                            var path = "/img/";
+                            $('#imageid').attr("photo", path);
+                            alert("data successfully inserted");
+                           
+                            Reset();
+                            Getlist2();
+                        }
+                        else {
+                            alert("unable to insert");
+                        }
+                    },
+                    error: function () {
+                        alert('insert failed ')
+                    }
+                });
+            }
+        }
+    }
+
+
+    function Reset(){
+
+       
+        $('#departmentid').val('');
+        $('#doctorid').val('');
+        $('#specializationid').val('');
+        $('#patientid').val('');
+        $('#imageid').val('');
+
+    };
+
+
+
+
+   
+
+
+
+
+
+
+    let departmentid;
+    function changes() {
+        $("#departmentid").change(function () {
+            departmentid = $("#departmentid").val();
+            GetList();
+            GetListsp();
+            GetListDoctor();
+
+        });
+    }
+
+
+    const GetList = () => {
+       
+
+        $.ajax({
+            url: '/Department/dList',
+            method: 'GET',
+            datatype: 'JSON',
+            data: {
+                doctid: departmentid,
+            },
+            success: function (data) {
+                var html = '';
+
+                $.each(data, function (key, item) {
+
+
+
+                    html += '<option value=' + item.doctorid + '>' + item.doctorname + '</option>';
+
+
+                })
+
+                $("#doctorid").html(html);
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+
+
+
+
+
+    let doctid;
+    function change() {
+        $("#doctorid").change(function () {
+            doctorid = $("#doctorid").val();
+            GetListsp();
+        });
+    }
+
+
+    const GetListsp = () => {
+      
+        $.ajax({
+            url: '/Department/sList',
+            method: 'GET',
+            datatype: 'JSON',
+            data: {
+                spid: doctorid,
+            },
+            success: function (data) {
+
+                var html = '';
+                $.each(data, function (key, item) {
+
+
+
+                    html += '<option value=' + item.sid + '>' + item.dspecialization + '</option>';
+
+                })
+
+                $("#specializationid").html(html);
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+    let doctorid;
+    function changed() {
+        $("#doctorid").change(function () {
+            doctorid = $("#doctorid").val();
+            GetListDoctor();
+        });
+    }
+
+
+    const GetListDoctor = () => {
+        
+        $.ajax({
+            url: '/Department/pList',
+            method: 'GET',
+            datatype: 'JSON',
+            data: {
+                patid: doctorid,
+            },
+            success: function (data) {
+
+                var html = '';
+                $.each(data, function (key, item) {
+
+
+
+                    html += '<option value=' + item.patientid + '>' + item.patientname + '</option>';
+
+                })
+
+                $("#patientid").html(html);
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+
+
+
+    function ConfirmDelete(id) {
+        alertify.confirm('Delete', 'Do you to delete', function () { Delete(id) }, function () { alertify.error('cancel') });
+    }
+    function Delete(id) {
+       
+
+        $.ajax({
+            url: '/Department/Delete?id=' + id,
+            method: 'POST',
+            datatype: 'JSON',
+            success: function (data) {
+                Getlist2();
+                Reset();
+                toastr.success('Data deleted sucessfully');
+
+            },
+            error: function () {
+                toastr.error('Unsucess to delete the  data');
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+    
+ 
+
+
+
+    const GetDetails = (listid) => {
+
+
+
+        $.ajax({
+
+            method: "GET",
+            url: "/Department/Details?id=" +listid,
+            datatype: "Json",
+            async:false,
+            contentType: false,
+            processData:false,
+            success: function (data) {
+               
+                $('#btnUpdate').show();
+                departmentid = data.departmentid;
+                doctorid = data.doctorid;
+
+                sid = data.sid;
+                
+
+                patientid = data.patientid;
+
+                $('#btnsave').hide();
+                $('#listid').val(data.listid);
+
+                $('#departmentid').val(data.departmentid).change();
+
+
+                $.ajax({
+                    url: '/Department/dList',
+                    method: 'GET',
+                    datatype: 'JSON',
+                    data: {
+                        doctid: departmentid,
+                    },
+                    success: function (data) {
+                        var html = '';
+
+                        $.each(data, function (key, item) {
+
+
+
+                            html += '<option value=' + item.doctorid + '>' + item.doctorname + '</option>';
+
+
+                        })
+
+                        $("#doctorid").html(html);
+                
+
+                        $('#doctorid').val(doctorid).change();
+
+                        $.ajax({
+                            url: '/Department/sList',
+                            method: 'GET',
+                            datatype: 'JSON',
+                            data: {
+                                spid: doctorid,
+                            },
+                            success: function (data) {
+
+                                var html = '';
+                                $.each(data, function (key, item) {
+
+
+
+                                    html += '<option value=' + item.sid + '>' + item.dspecialization + '</option>';
+
+                                })
+
+                                $("#specializationid").html(html);
+                            
+
+                                $('#doctorid').val(doctorid).change();
+
+                                $.ajax({
+                                    url: '/Department/pList',
+                                    method: 'GET',
+                                    datatype: 'JSON',
+                                    data: {
+                                        patid: doctorid,
+                                    },
+                                    success: function (data) {
+
+                                        var html = '';
+                                        $.each(data, function (key, item) {
+
+
+
+                                            html += '<option value=' + item.patientid + '>' + item.patientname + '</option>';
+
+                                        })
+
+                                        $("#patientid").html(html);
+
+                                      
+                                    },
+                                    error: function () {
+                                        alert('error in patient')
+
+                                    }
+                                });
+
+                            },
+                            error: function () {
+                                alert('error in get specialization')
+
+                            }
+                        });
+
+
+
+                    },
+                    error: function () {
+                        alert('error in get doctor')
+
+                    }
+                })
+
+ },
+            error: function () {
+                alert('unable to department');
+            }
+        });
+
+       
+
+    }
+
+
+
+
+
+
+
+
+    function Update() {
+
+        debugger;
+        $.ajax({
+            url: '/Department/Update',
+            type: 'post',
+            dataType: 'json',
+            async: false,
+            data: {
+                departmentid: $('#departmentid').val(),
+                doctorid: $('#doctorid').val(),
+                patientid: $('#patientid').val(),
+                sid: $('#specializationid').val(),
+                listid: $('#listid').val(),
+                
+                
+               /* image: $('#imageid').val(),*/
+               
+            },
+            success: function (data) {
+                debugger;
+
+                alert('Data updated sucessfully');
+               /* toastr.success(data);*/
+               
+
+                Getlist2();
+
+                Reset();
+
+                $('#btnsave').show();
+                $('#btnUpdate').hide();
+
+               
+            }, error: function (data) {
+                toastr.error('update failed ')
+            }
+        });
+    }
+       
+
+</script>
